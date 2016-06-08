@@ -13,14 +13,39 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
+    print "bj: deleteMatches: Entry"
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    sql = "DELETE FROM Matches;"
+    pgcurs.execute(sql)
+    pgconn.commit()
+    pgconn.close()
+    print "bj: deleteMatches: Exit"
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
+    print "bj: deletePlayers: Entry"
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    sql = "DELETE FROM Players;"
+    pgcurs.execute(sql)
+    pgconn.commit()
+    pgconn.close()
+    print "bj: deletePlayers: Exit"
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
+    print "bj: countPlayers: Entry"
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    query = "SELECT COUNT(*) FROM Players;"
+    pgcurs.execute(query)
+    result = pgconn.fetchone()
+    count = result[0]
+    print "bj: countPlayers: Exit"
+    return count
 
 
 def registerPlayer(name):
@@ -32,6 +57,13 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
+    print "bj: registerPlayer: Entry"
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    query = "INSERT INTO Players (name) VALUES ('%s');"
+    pgcurs.execute(query, (name,))
+    print "bj: registerPlayer: Exit"
+    return count
 
 
 def playerStandings():
