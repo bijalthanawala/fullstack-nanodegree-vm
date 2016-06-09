@@ -19,6 +19,12 @@ def deleteMatches():
     sql = "DELETE FROM Matches;"
     pgcurs.execute(sql)
     pgconn.commit()
+    query = """
+            UPDATE Players 
+            SET match_count=0
+            """
+    pgcurs.execute(query)
+    pgconn.commit()
     pgconn.close()
     print "bj: deleteMatches: Exit"
 
@@ -115,6 +121,20 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
     print "bj: reportMatch: Entry"
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    print "type=",type(winner)
+    query = "INSERT INTO Matches (plid_win,plid_lose) VALUES (%s,%s);"
+    pgcurs.execute(query, (winner,loser))
+    pgconn.commit()
+    query = """
+            UPDATE Players 
+            SET match_count=match_count+1
+            WHERE plid=%s OR plid=%s;
+            """
+    pgcurs.execute(query, (winner,loser))
+    pgconn.commit()
+    print "bj: registerPlayer: Exit"
     print "bj: reportMatch: Exit"
  
  
