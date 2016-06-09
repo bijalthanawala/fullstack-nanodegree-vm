@@ -13,7 +13,6 @@ def connect():
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    print "bj: deleteMatches: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
     sql = "DELETE FROM Matches;"
@@ -26,31 +25,26 @@ def deleteMatches():
     pgcurs.execute(query)
     pgconn.commit()
     pgconn.close()
-    print "bj: deleteMatches: Exit"
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    print "bj: deletePlayers: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
     sql = "DELETE FROM Players;"
     pgcurs.execute(sql)
     pgconn.commit()
     pgconn.close()
-    print "bj: deletePlayers: Exit"
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    print "bj: countPlayers: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
     query = "SELECT COUNT(*) FROM Players;"
     pgcurs.execute(query)
     result = pgcurs.fetchone()
     count = result[0]
-    print "bj: countPlayers: Exit"
     return count
 
 
@@ -63,13 +57,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    print "bj: registerPlayer: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
     query = "INSERT INTO Players (name) VALUES (%s);"
     pgcurs.execute(query, (name,))
     pgconn.commit()
-    print "bj: registerPlayer: Exit"
 
 
 def playerStandings():
@@ -85,7 +77,6 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    print "bj: playerStandings: Entry"
     results = []
     pgconn = connect()
     pgcurs = pgconn.cursor()
@@ -99,17 +90,15 @@ def playerStandings():
             """
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
-    print "rows = ", rows
+    #print "rows = ", rows
     for row in rows:
-        print "row = ", row
         listrow = list(row)
         if not listrow[2]:
             listrow[2] = 0
         row = tuple(listrow)
-        print "row = ", row
+        #print "row = ", row
         results.append(row)
-    print "bj: playerStandings: Exit"
-    print "results =", results
+    #print "results =", results
     return results
 
 
@@ -120,10 +109,8 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    print "bj: reportMatch: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
-    print "type=", type(winner)
     query = "INSERT INTO Matches (pl_id_win,pl_id_lose) VALUES (%s,%s);"
     pgcurs.execute(query, (winner, loser))
     pgconn.commit()
@@ -134,8 +121,6 @@ def reportMatch(winner, loser):
             """
     pgcurs.execute(query, (winner, loser))
     pgconn.commit()
-    print "bj: registerPlayer: Exit"
-    print "bj: reportMatch: Exit"
 
 
 def swissPairings():
@@ -153,8 +138,6 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
-    print "bj: swissPairings: Entry"
-
     swisspairs = []
     results = playerStandings()
     nr_pairs = len(results) / 2
@@ -163,5 +146,5 @@ def swissPairings():
         apair = (results[off][0], results[off][1],
                  results[off+1][0], results[off+1][1])
         swisspairs.append(apair)
-    print "bj: swissPairings: Exit"
+    #print swisspairs
     return swisspairs
