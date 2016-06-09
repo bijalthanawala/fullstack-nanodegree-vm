@@ -90,12 +90,12 @@ def playerStandings():
     pgconn = connect()
     pgcurs = pgconn.cursor()
     query = """
-            SELECT plid, name, victories, match_count
+            SELECT pl_id, name, victories, match_count
             FROM players LEFT JOIN
-                (SELECT plid_win, COUNT(plid_win) AS victories
-                 FROM matches GROUP BY plid_win ORDER BY victories)
+                (SELECT pl_id_win, COUNT(pl_id_win) AS victories
+                 FROM matches GROUP BY pl_id_win ORDER BY victories)
                 AS inner_mtach
-            ON plid_win=plid;
+            ON pl_id_win=pl_id;
             """
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
@@ -124,13 +124,13 @@ def reportMatch(winner, loser):
     pgconn = connect()
     pgcurs = pgconn.cursor()
     print "type=", type(winner)
-    query = "INSERT INTO Matches (plid_win,plid_lose) VALUES (%s,%s);"
+    query = "INSERT INTO Matches (pl_id_win,pl_id_lose) VALUES (%s,%s);"
     pgcurs.execute(query, (winner, loser))
     pgconn.commit()
     query = """
             UPDATE Players
             SET match_count=match_count+1
-            WHERE plid=%s OR plid=%s;
+            WHERE pl_id=%s OR pl_id=%s;
             """
     pgcurs.execute(query, (winner, loser))
     pgconn.commit()

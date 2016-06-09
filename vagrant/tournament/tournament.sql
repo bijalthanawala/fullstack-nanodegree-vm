@@ -13,13 +13,13 @@ CREATE DATABASE tournament;
 \c tournament;
 
 CREATE TABLE Players (
-    plid SERIAL PRIMARY KEY,
+    pl_id SERIAL PRIMARY KEY,
     name VARCHAR(50),
     match_count INTEGER DEFAULT(0)
     );
 
 CREATE TABLE Matches (
-    m_id SERIAL,
-    plid_win INTEGER REFERENCES Players(plid),
-    plid_lose INTEGER REFERENCES Players(plid)
+    match_id SERIAL,
+    pl_id_win INTEGER REFERENCES Players(pl_id),
+    pl_id_lose INTEGER REFERENCES Players(pl_id)
     );
