@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # tournament.py -- implementation of a Swiss-system tournament
 #
 
@@ -20,7 +20,7 @@ def deleteMatches():
     pgcurs.execute(sql)
     pgconn.commit()
     query = """
-            UPDATE Players 
+            UPDATE Players
             SET match_count=0
             """
     pgcurs.execute(query)
@@ -56,10 +56,10 @@ def countPlayers():
 
 def registerPlayer(name):
     """Adds a player to the tournament database.
-  
+
     The database assigns a unique serial id number for the player.  (This
     should be handled by your SQL database schema, not in your Python code.)
-  
+
     Args:
       name: the player's full name (need not be unique).
     """
@@ -91,9 +91,10 @@ def playerStandings():
     pgcurs = pgconn.cursor()
     query = """
             SELECT plid, name, victories, match_count
-            FROM players LEFT JOIN 
-                (SELECT plid_win, COUNT(plid_win) AS victories 
-                 FROM matches GROUP BY plid_win ORDER BY victories) AS inner_mtach 
+            FROM players LEFT JOIN
+                (SELECT plid_win, COUNT(plid_win) AS victories
+                 FROM matches GROUP BY plid_win ORDER BY victories)
+                AS inner_mtach
             ON plid_win=plid;
             """
     pgcurs.execute(query)
@@ -101,7 +102,6 @@ def playerStandings():
     print "rows = ", rows
     for row in rows:
         print "row = ", row
-        #onetuple = (row['plid'], row['name'], row['victories'], row['match_count'])
         listrow = list(row)
         if not listrow[2]:
             listrow[2] = 0
@@ -109,7 +109,7 @@ def playerStandings():
         print "row = ", row
         results.append(row)
     print "bj: playerStandings: Exit"
-    print "results =", results 
+    print "results =", results
     return results
 
 
@@ -123,29 +123,29 @@ def reportMatch(winner, loser):
     print "bj: reportMatch: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
-    print "type=",type(winner)
+    print "type=", type(winner)
     query = "INSERT INTO Matches (plid_win,plid_lose) VALUES (%s,%s);"
-    pgcurs.execute(query, (winner,loser))
+    pgcurs.execute(query, (winner, loser))
     pgconn.commit()
     query = """
-            UPDATE Players 
+            UPDATE Players
             SET match_count=match_count+1
             WHERE plid=%s OR plid=%s;
             """
-    pgcurs.execute(query, (winner,loser))
+    pgcurs.execute(query, (winner, loser))
     pgconn.commit()
     print "bj: registerPlayer: Exit"
     print "bj: reportMatch: Exit"
- 
- 
+
+
 def swissPairings():
     """Returns a list of pairs of players for the next round of a match.
-  
+
     Assuming that there are an even number of players registered, each player
     appears exactly once in the pairings.  Each player is paired with another
     player with an equal or nearly-equal win record, that is, a player adjacent
     to him or her in the standings.
-  
+
     Returns:
       A list of tuples, each of which contains (id1, name1, id2, name2)
         id1: the first player's unique id
@@ -160,9 +160,8 @@ def swissPairings():
     nr_pairs = len(results) / 2
     for i in range(nr_pairs):
         off = i*2
-        apair = (results[off][0],results[off][1],
-                 results[off+1][0],results[off+1][1])
+        apair = (results[off][0], results[off][1],
+                 results[off+1][0], results[off+1][1])
         swisspairs.append(apair)
     print "bj: swissPairings: Exit"
     return swisspairs
-
