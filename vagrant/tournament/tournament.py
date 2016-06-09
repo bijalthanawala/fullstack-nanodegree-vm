@@ -154,6 +154,15 @@ def swissPairings():
         name2: the second player's name
     """
     print "bj: swissPairings: Entry"
-    print "bj: swissPairings: Exit"
 
+    swisspairs = []
+    results = playerStandings()
+    nr_pairs = len(results) / 2
+    for i in range(nr_pairs):
+        off = i*2
+        apair = (results[off][0],results[off][1],
+                 results[off+1][0],results[off+1][1])
+        swisspairs.append(apair)
+    print "bj: swissPairings: Exit"
+    return swisspairs
 
