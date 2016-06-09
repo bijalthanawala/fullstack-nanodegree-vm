@@ -42,7 +42,7 @@ def countPlayers():
     pgcurs = pgconn.cursor()
     query = "SELECT COUNT(*) FROM Players;"
     pgcurs.execute(query)
-    result = pgconn.fetchone()
+    result = pgcurs.fetchone()
     count = result[0]
     print "bj: countPlayers: Exit"
     return count
@@ -60,10 +60,10 @@ def registerPlayer(name):
     print "bj: registerPlayer: Entry"
     pgconn = connect()
     pgcurs = pgconn.cursor()
-    query = "INSERT INTO Players (name) VALUES ('%s');"
+    query = "INSERT INTO Players (name) VALUES (%s);"
     pgcurs.execute(query, (name,))
+    pgconn.commit()
     print "bj: registerPlayer: Exit"
-    return count
 
 
 def playerStandings():
@@ -79,6 +79,32 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
+    print "bj: playerStandings: Entry"
+    results = []
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    query = """
+            SELECT plid, name, victories, match_count
+            FROM players LEFT JOIN 
+                (SELECT plid_win, COUNT(plid_win) AS victories 
+                 FROM matches GROUP BY plid_win ORDER BY victories) AS inner_mtach 
+            ON plid_win=plid;
+            """
+    pgcurs.execute(query)
+    rows = pgcurs.fetchall()
+    print "rows = ", rows
+    for row in rows:
+        print "row = ", row
+        #onetuple = (row['plid'], row['name'], row['victories'], row['match_count'])
+        listrow = list(row)
+        if not listrow[2]:
+            listrow[2] = 0
+        row = tuple(listrow)
+        print "row = ", row
+        results.append(row)
+    print "bj: playerStandings: Exit"
+    print "results =", results 
+    return results
 
 
 def reportMatch(winner, loser):
@@ -88,6 +114,8 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
+    print "bj: reportMatch: Entry"
+    print "bj: reportMatch: Exit"
  
  
 def swissPairings():
@@ -105,5 +133,7 @@ def swissPairings():
         id2: the second player's unique id
         name2: the second player's name
     """
+    print "bj: swissPairings: Entry"
+    print "bj: swissPairings: Exit"
 
 
