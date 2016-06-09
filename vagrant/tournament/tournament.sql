@@ -14,16 +14,18 @@ CREATE DATABASE tournament;
 
 CREATE TABLE Players (
 	plid SERIAL PRIMARY KEY,
-	name VARCHAR(50)
+	name VARCHAR(50),
+    match_count INTEGER DEFAULT(0)
 	);
 
-CREATE TABLE Scores (
-	plid INTEGER REFERENCES Players,
-	score INTEGER
-	);
+-- CREATE TABLE Scores (
+-- 	plid INTEGER REFERENCES Players,
+--    match_count INTEGER,
+--	wins INTEGER
+--	);
 
 CREATE TABLE Matches (
-	plid INTEGER REFERENCES Players
+    m_id    SERIAL,
+	plid_win INTEGER REFERENCES Players(plid),
+	plid_lose INTEGER REFERENCES Players(plid)
 	);
-	
-
