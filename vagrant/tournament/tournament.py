@@ -89,10 +89,15 @@ def playerStandings():
     results = []
     (pgconn, pgcurs) = db_open()
     query = """
-            SELECT pl_id, name, victories, match_count
-            FROM players LEFT JOIN
+            SELECT  pl_id,
+                    name,
+                    CASE WHEN victories IS NOT NULL
+                       THEN victories
+                       ELSE 0 END AS victories,
+                    match_count
+            FROM Players LEFT JOIN
                 (SELECT pl_id_win, COUNT(pl_id_win) AS victories
-                 FROM matches
+                 FROM Matches
                  GROUP BY pl_id_win)
                 AS inner_match
             ON pl_id_win=pl_id
@@ -102,8 +107,6 @@ def playerStandings():
     rows = pgcurs.fetchall()
     for row in rows:
         listrow = list(row)
-        if not listrow[2]:
-            listrow[2] = 0
         row = tuple(listrow)
         results.append(row)
     db_close(pgconn, False)
