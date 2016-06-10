@@ -10,17 +10,20 @@ def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
 
+
 def db_open():
     """Returns a database connection, and cursor"""
     pgconn = connect()
     pgcurs = pgconn.cursor()
     return (pgconn, pgcurs)
 
+
 def db_close(pgconn, do_commit=True):
     """Closes a database connection, after commiting(if requested to)"""
     if do_commit:
         pgconn.commit()
     pgconn.close()
+
 
 def deleteMatches():
     """Remove all the match records from the database."""
@@ -70,12 +73,11 @@ def registerPlayer(name):
     db_close(pgconn)
 
 
-
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
-    The first entry in the list should be the player in first place, or a player
-    tied for first place if there is currently a tie.
+    The first entry in the list should be the player in first place, or a
+    player tied for first place if there is currently a tie.
 
     Returns:
       A list of tuples, each of which contains (id, name, wins, matches):
@@ -90,23 +92,20 @@ def playerStandings():
             SELECT pl_id, name, victories, match_count
             FROM players LEFT JOIN
                 (SELECT pl_id_win, COUNT(pl_id_win) AS victories
-                 FROM matches 
-                 GROUP BY pl_id_win) 
+                 FROM matches
+                 GROUP BY pl_id_win)
                 AS inner_match
             ON pl_id_win=pl_id
             ORDER BY victories;
             """
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
-    #print "rows = ", rows
     for row in rows:
         listrow = list(row)
         if not listrow[2]:
             listrow[2] = 0
-        #print "listrow = ", listrow
         row = tuple(listrow)
         results.append(row)
-    #print "results =", results
     db_close(pgconn, False)
     return results
 
@@ -154,5 +153,4 @@ def swissPairings():
         apair = (results[off][0], results[off][1],
                  results[off+1][0], results[off+1][1])
         swisspairs.append(apair)
-    #print "swisspairs: ", swisspairs
     return swisspairs
