@@ -91,10 +91,10 @@ def playerStandings():
             FROM players LEFT JOIN
                 (SELECT pl_id_win, COUNT(pl_id_win) AS victories
                  FROM matches 
-                 GROUP BY pl_id_win 
-                 ORDER BY victories)
+                 GROUP BY pl_id_win) 
                 AS inner_match
-            ON pl_id_win=pl_id;
+            ON pl_id_win=pl_id
+            ORDER BY victories;
             """
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
