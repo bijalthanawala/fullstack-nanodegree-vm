@@ -10,11 +10,21 @@ def connect():
     """Connect to the PostgreSQL database.  Returns a database connection."""
     return psycopg2.connect("dbname=tournament")
 
+def db_open():
+    """Returns a database connection, and cursor"""
+    pgconn = connect()
+    pgcurs = pgconn.cursor()
+    return (pgconn, pgcurs)
+
+def db_close(pgconn, do_commit=True):
+    """Closes a database connection, after commiting(if requested to)"""
+    if do_commit:
+        pgconn.commit()
+    pgconn.close()
 
 def deleteMatches():
     """Remove all the match records from the database."""
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
+    (pgconn, pgcurs) = db_open()
     sql = "DELETE FROM Matches;"
     pgcurs.execute(sql)
     pgconn.commit()
@@ -23,28 +33,25 @@ def deleteMatches():
             SET match_count=0
             """
     pgcurs.execute(query)
-    pgconn.commit()
-    pgconn.close()
+    db_close(pgconn)
 
 
 def deletePlayers():
     """Remove all the player records from the database."""
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
+    (pgconn, pgcurs) = db_open()
     sql = "DELETE FROM Players;"
     pgcurs.execute(sql)
-    pgconn.commit()
-    pgconn.close()
+    db_close(pgconn)
 
 
 def countPlayers():
     """Returns the number of players currently registered."""
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
+    (pgconn, pgcurs) = db_open()
     query = "SELECT COUNT(*) FROM Players;"
     pgcurs.execute(query)
     result = pgcurs.fetchone()
     count = result[0]
+    db_close(pgconn, False)
     return count
 
 
@@ -57,11 +64,11 @@ def registerPlayer(name):
     Args:
       name: the player's full name (need not be unique).
     """
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
+    (pgconn, pgcurs) = db_open()
     query = "INSERT INTO Players (name) VALUES (%s);"
     pgcurs.execute(query, (name,))
-    pgconn.commit()
+    db_close(pgconn)
+
 
 
 def playerStandings():
@@ -78,14 +85,15 @@ def playerStandings():
         matches: the number of matches the player has played
     """
     results = []
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
+    (pgconn, pgcurs) = db_open()
     query = """
             SELECT pl_id, name, victories, match_count
             FROM players LEFT JOIN
                 (SELECT pl_id_win, COUNT(pl_id_win) AS victories
-                 FROM matches GROUP BY pl_id_win ORDER BY victories)
-                AS inner_mtach
+                 FROM matches 
+                 GROUP BY pl_id_win 
+                 ORDER BY victories)
+                AS inner_match
             ON pl_id_win=pl_id;
             """
     pgcurs.execute(query)
@@ -95,10 +103,11 @@ def playerStandings():
         listrow = list(row)
         if not listrow[2]:
             listrow[2] = 0
+        #print "listrow = ", listrow
         row = tuple(listrow)
-        #print "row = ", row
         results.append(row)
     #print "results =", results
+    db_close(pgconn, False)
     return results
 
 
@@ -109,9 +118,8 @@ def reportMatch(winner, loser):
       winner:  the id number of the player who won
       loser:  the id number of the player who lost
     """
-    pgconn = connect()
-    pgcurs = pgconn.cursor()
-    query = "INSERT INTO Matches (pl_id_win,pl_id_lose) VALUES (%s,%s);"
+    (pgconn, pgcurs) = db_open()
+    query = "INSERT INTO Matches (pl_id_win, pl_id_lose) VALUES (%s,%s);"
     pgcurs.execute(query, (winner, loser))
     pgconn.commit()
     query = """
@@ -120,7 +128,7 @@ def reportMatch(winner, loser):
             WHERE pl_id=%s OR pl_id=%s;
             """
     pgcurs.execute(query, (winner, loser))
-    pgconn.commit()
+    db_close(pgconn)
 
 
 def swissPairings():
@@ -146,5 +154,5 @@ def swissPairings():
         apair = (results[off][0], results[off][1],
                  results[off+1][0], results[off+1][1])
         swisspairs.append(apair)
-    #print swisspairs
+    #print "swisspairs: ", swisspairs
     return swisspairs
