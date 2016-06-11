@@ -14,8 +14,7 @@ CREATE DATABASE tournament;
 
 CREATE TABLE Players (
     pl_id SERIAL PRIMARY KEY,
-    name VARCHAR(50),
-    match_count INTEGER DEFAULT(0)
+    name VARCHAR(50)
     );
 
 CREATE TABLE Matches (

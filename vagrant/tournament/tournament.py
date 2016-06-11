@@ -30,12 +30,6 @@ def deleteMatches():
     (pgconn, pgcurs) = db_open()
     sql = "DELETE FROM Matches;"
     pgcurs.execute(sql)
-    pgconn.commit()
-    query = """
-            UPDATE Players
-            SET match_count=0
-            """
-    pgcurs.execute(query)
     db_close(pgconn)
 
 
@@ -73,6 +67,23 @@ def registerPlayer(name):
     db_close(pgconn)
 
 
+def getNumberOfMatches(playerid):
+    """
+    Returns number of matches playes by a player
+    """
+
+    (pgconn, pgcurs) = db_open()
+    query = """
+            SELECT COUNT(*) FROM Matches
+            WHERE pl_id_win = %s OR pl_id_lose = %s
+            """
+    pgcurs.execute(query, (playerid, playerid))
+    row = pgcurs.fetchone()
+    match_count = row[0]
+    db_close(pgconn)
+    return match_count
+
+
 def playerStandings():
     """Returns a list of the players and their win records, sorted by wins.
 
@@ -86,15 +97,14 @@ def playerStandings():
         wins: the number of matches the player has won
         matches: the number of matches the player has played
     """
-    results = []
+    plStandings = []
     (pgconn, pgcurs) = db_open()
     query = """
             SELECT  pl_id,
                     name,
                     CASE WHEN victories IS NOT NULL
                        THEN victories
-                       ELSE 0 END AS victories,
-                    match_count
+                       ELSE 0 END AS victories
             FROM Players LEFT JOIN
                 (SELECT pl_id_win, COUNT(pl_id_win) AS victories
                  FROM Matches
@@ -106,11 +116,13 @@ def playerStandings():
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
     for row in rows:
-        listrow = list(row)
-        row = tuple(listrow)
-        results.append(row)
+        plrecord = list(row)
+        no_of_matches = getNumberOfMatches(plrecord[0])
+        plrecord.append(no_of_matches)
+        row = tuple(plrecord)
+        plStandings.append(row)
     db_close(pgconn, False)
-    return results
+    return plStandings
 
 
 def reportMatch(winner, loser):
@@ -122,13 +134,6 @@ def reportMatch(winner, loser):
     """
     (pgconn, pgcurs) = db_open()
     query = "INSERT INTO Matches (pl_id_win, pl_id_lose) VALUES (%s,%s);"
-    pgcurs.execute(query, (winner, loser))
-    pgconn.commit()
-    query = """
-            UPDATE Players
-            SET match_count=match_count+1
-            WHERE pl_id=%s OR pl_id=%s;
-            """
     pgcurs.execute(query, (winner, loser))
     db_close(pgconn)
 
