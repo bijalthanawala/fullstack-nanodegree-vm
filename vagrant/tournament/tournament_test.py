@@ -259,7 +259,7 @@ def testPairings_8players_3rounds():
     # playerStandings() has been tested in testReportMatches_8players() for 3 rounds,
     # use those results to test pairings
     standings = playerStandings()
-    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories} 
+    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories}
     player_victories = dict([ (standing[0],standing[2]) for standing in standings])
     for pair in pairings:
         player_a_victories = player_victories[pair[0]]
@@ -269,7 +269,7 @@ def testPairings_8players_3rounds():
                              "{id_a}(victories=player_a_victories) and "\
                              "{id_b}(victories=player_b_victories)".format(\
                              id_a=pair[0], player_a_victories=player_a_victories,
-                             id_b=pair[2], player_b_victories=player_b_victories)) 
+                             id_b=pair[2], player_b_victories=player_b_victories))
     print "16. All players paired correctly for round#1"
 
     # Run Round #1
@@ -284,7 +284,7 @@ def testPairings_8players_3rounds():
     # playerStandings() has been tested in testReportMatches_8players() for 3 rounds,
     # use those results to test pairings
     standings = playerStandings()
-    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories} 
+    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories}
     player_victories = dict([ (standing[0],standing[2]) for standing in standings])
     for pair in pairings:
         player_a_victories = player_victories[pair[0]]
@@ -294,7 +294,7 @@ def testPairings_8players_3rounds():
                              "{id_a}(victories=player_a_victories) and "\
                              "{id_b}(victories=player_b_victories)".format(\
                              id_a=pair[0], player_a_victories=player_a_victories,
-                             id_b=pair[2], player_b_victories=player_b_victories)) 
+                             id_b=pair[2], player_b_victories=player_b_victories))
     print "17. All players paired correctly for round #2 (after round#1)"
 
     # Run Round #2
@@ -309,7 +309,7 @@ def testPairings_8players_3rounds():
     # playerStandings() has been tested in testReportMatches_8players() for 3 rounds,
     # use those results to test pairings
     standings = playerStandings()
-    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories} 
+    # Turn the result into lookup dictionary of this kind =>  {playerid: Number_of_victories}
     player_victories = dict([ (standing[0],standing[2]) for standing in standings])
     for pair in pairings:
         player_a_victories = player_victories[pair[0]]
@@ -319,9 +319,9 @@ def testPairings_8players_3rounds():
                              "{id_a}(victories=player_a_victories) and "\
                              "{id_b}(victories=player_b_victories)".format(\
                              id_a=pair[0], player_a_victories=player_a_victories,
-                             id_b=pair[2], player_b_victories=player_b_victories)) 
+                             id_b=pair[2], player_b_victories=player_b_victories))
     print "18. All players paired correctly for round #3 (after round#2)"
-              
+
 
 if __name__ == '__main__':
     testCount()
