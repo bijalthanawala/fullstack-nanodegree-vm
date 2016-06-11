@@ -111,7 +111,7 @@ def playerStandings():
                  GROUP BY winner_player_id)
                 AS inner_match
             ON winner_player_id=player_id
-            ORDER BY victories;
+            ORDER BY victories DESC;
             """
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
