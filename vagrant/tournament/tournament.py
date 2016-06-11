@@ -116,9 +116,13 @@ def playerStandings():
     pgcurs.execute(query)
     rows = pgcurs.fetchall()
     for row in rows:
+        # Convert the tuple to list so we can add the 'Number of matches'
         plrecord = list(row)
+        # Query 'Number of matches' played by this player
         no_of_matches = getNumberOfMatches(plrecord[0])
+        # Append 'Number of matches' to this player's record
         plrecord.append(no_of_matches)
+        # Convert the list back to immutable tuple
         row = tuple(plrecord)
         plStandings.append(row)
     db_close(pgconn, False)
@@ -133,7 +137,10 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
     (pgconn, pgcurs) = db_open()
-    query = "INSERT INTO Matches (winner_player_id, loser_player_id) VALUES (%s,%s);"
+    query = """
+            INSERT INTO Matches (winner_player_id, loser_player_id)
+            VALUES (%s,%s);
+            """
     pgcurs.execute(query, (winner, loser))
     db_close(pgconn)
 
