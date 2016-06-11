@@ -75,7 +75,7 @@ def getNumberOfMatches(playerid):
     (pgconn, pgcurs) = db_open()
     query = """
             SELECT COUNT(*) FROM Matches
-            WHERE pl_id_win = %s OR pl_id_lose = %s
+            WHERE winner_player_id = %s OR loser_player_id = %s
             """
     pgcurs.execute(query, (playerid, playerid))
     row = pgcurs.fetchone()
@@ -100,17 +100,17 @@ def playerStandings():
     plStandings = []
     (pgconn, pgcurs) = db_open()
     query = """
-            SELECT  pl_id,
+            SELECT  player_id,
                     name,
                     CASE WHEN victories IS NOT NULL
                        THEN victories
                        ELSE 0 END AS victories
             FROM Players LEFT JOIN
-                (SELECT pl_id_win, COUNT(pl_id_win) AS victories
+                (SELECT winner_player_id, COUNT(winner_player_id) AS victories
                  FROM Matches
-                 GROUP BY pl_id_win)
+                 GROUP BY winner_player_id)
                 AS inner_match
-            ON pl_id_win=pl_id
+            ON winner_player_id=player_id
             ORDER BY victories;
             """
     pgcurs.execute(query)
@@ -133,7 +133,7 @@ def reportMatch(winner, loser):
       loser:  the id number of the player who lost
     """
     (pgconn, pgcurs) = db_open()
-    query = "INSERT INTO Matches (pl_id_win, pl_id_lose) VALUES (%s,%s);"
+    query = "INSERT INTO Matches (winner_player_id, loser_player_id) VALUES (%s,%s);"
     pgcurs.execute(query, (winner, loser))
     db_close(pgconn)
 
@@ -155,6 +155,9 @@ def swissPairings():
     """
     swisspairs = []
     results = playerStandings()
+
+    # Results of playerStandings are sorted by number of victories
+    # so pairing up two consecutive players will produce correct Swiss pairs
     nr_pairs = len(results) / 2
     for i in range(nr_pairs):
         off = i*2
