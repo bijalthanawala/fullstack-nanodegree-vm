@@ -1,0 +1,27 @@
+Udacity Nanodegree - Full Stack Developer 
+Project #2 Tournament
+
+
+How to run/test ?
+Run $ python tournament_test.py
+
+
+Extra Note:
+I have added two extra test-routines in tournament_test.py: 
+testReportMatches_8players() and testPairings_8players_3rounds()
+The purpose of these new routines is to test 8 players and 3 rounds test-cases.
+
+I have left the two original test-routines (testReportMatches() and testPairings())
+as it is, for two intentions: 
+(a) The original routines present simpler, smaller test data for developer with 
+    beginner-level skills to deal with  
+(b) Not pollute already tested test-routines with new code/logic
+
+
+Project Status At The Time of Submissions:
+All tests-cases (original and the new ones introduced by me) passes.
+
+Extra Credit Implementations: 
+None
+
+Thanks
